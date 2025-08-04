@@ -1,0 +1,43 @@
+<div class="auth-wrapper">
+    <div class="auth-content">
+        <div class="card">
+            <div class="row align-items-center text-center">
+                <div class="col-md-12">
+                    <div class="card-body">
+                        <img src="assets/images/v2-atlantique.png" alt="ATLANTIQUE BESC Logo" class="img-fluid custom-logo mb-4" />
+                        <h4 class="mb-3 f-w-400">Connexion</h4> <form (ngSubmit)="onSubmit()">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"><i class="feather icon-mail"></i></span>
+                            <input type="text" class="form-control" placeholder="Numéro de Téléphone (MSISDN)" aria-label="MSISDN" aria-describedby="basic-addon1"
+                                   [(ngModel)]="msisdn" name="msisdn" required />
+                        </div>
+                        <div class="input-group mb-4">
+                            <span class="input-group-text" id="basic-addon3"><i class="feather icon-lock"></i></span>
+                            <input type="password" class="form-control" placeholder="Mot de Passe" aria-label="Password" aria-describedby="basic-addon3"
+                                   [(ngModel)]="password_login" name="password_login" required />
+                        </div>
+
+                        <div class="form-group text-start mt-2">
+                            <div class="checkbox checkbox-primary d-inline">
+                                <input type="checkbox" name="rememberMe" id="checkbox-fill-a1" [(ngModel)]="rememberMe" />
+                                <label for="checkbox-fill-a1" class="cr">Se souvenir de moi</label>
+                            </div>
+                        </div>
+
+                        @if (errorMessage) {
+                            <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+                        }
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-block btn-primary mb-4" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span *ngIf="!loading">Se connecter</span>
+                            </button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

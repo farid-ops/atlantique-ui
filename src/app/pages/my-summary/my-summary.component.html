@@ -1,0 +1,113 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Ma Caisse Journalière" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des informations de la caisse...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <div class="form-group row mb-4">
+          <label for="startDate" class="col-lg-2 col-form-label">Date Début:</label>
+          <div class="col-lg-4">
+            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" (change)="loadDailySummaries()">
+          </div>
+          <label for="endDate" class="col-lg-2 col-form-label">Date Fin:</label>
+          <div class="col-lg-4">
+            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" (change)="loadDailySummaries()">
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h5 class="mb-3">Opérations de Caisse pour Aujourd'hui ({{ 'now' | date:'fullDate' }})</h5>
+          <div *ngIf="summaryForToday && !loading" class="mb-4">
+            <div class="row">
+              <div class="col-md-6 mb-3"><strong>ID Caissier:</strong> {{ summaryForToday.caissierId }}</div>
+              <div class="col-md-6 mb-3"><strong>Solde Actuel:</strong> {{ summaryForToday.endingBalance  }}</div>
+              <div class="col-md-6 mb-3">
+                <strong>Statut:</strong>
+                <span class="badge" [ngClass]="{'bg-success': !summaryForToday.isClosed, 'bg-danger': summaryForToday.isClosed}">
+                  {{ summaryForToday.isClosed ? 'Clôturée' : 'Ouverte' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!summaryForToday && !loading && currentUserRoles.has('CAISSIER')" class="alert alert-info">
+            Aucun résumé de caisse trouvé pour aujourd'hui.
+            <button class="btn btn-sm btn-primary ms-2" (click)="openCashRegister()">Ouvrir la caisse</button>
+          </div>
+
+          <div *ngIf="summaryForToday && !summaryForToday.isClosed && currentUserRoles.has('CAISSIER')" class="mt-4">
+            <h5 class="mb-3">Effectuer des Opérations</h5>
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label for="depositAmount">Montant du Dépôt:</label>
+                <input type="number" id="depositAmount" class="form-control" [(ngModel)]="depositAmount" placeholder="Entrer le montant">
+                <button class="btn btn-primary mt-2" (click)="recordDeposit()">Enregistrer Dépôt</button>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="withdrawalAmount">Montant du Retrait:</label>
+                <input type="number" id="withdrawalAmount" class="form-control" [(ngModel)]="withdrawalAmount" placeholder="Entrer le montant">
+                <button class="btn btn-warning mt-2" (click)="recordWithdrawal()">Enregistrer Retrait</button>
+              </div>
+            </div>
+            <button class="btn btn-danger mt-3" (click)="closeCashRegister()">Clôturer la Caisse</button>
+          </div>
+
+          <div *ngIf="summaryForToday && summaryForToday.isClosed && currentUserRoles.has('CAISSIER')" class="mt-4">
+            <button class="btn btn-success" (click)="openCashRegister()">Réouvrir la Caisse</button>
+          </div>
+        </div>
+
+        <hr class="mt-5 mb-5">
+
+        <h4 class="mt-5">Historique de Caisse du {{ startDate | date:'fullDate' }} au {{ endDate | date:'fullDate' }}</h4>
+        <div *ngIf="summaries.length > 0 && !loading" class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>ID Caisse</th>
+              <th>ID Caissier</th>
+              <th>Date Opération</th>
+              <th>Solde Ouverture</th>
+              <th>Total Dépôts</th>
+              <th>Total Retraits</th>
+              <th>Solde Clôture</th>
+              <th># Transactions</th>
+              <th>Statut</th>
+              <th>Date Création</th>
+              <th>Dernière MAJ</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let sum of summaries">
+              <td>{{ sum.id }}</td>
+              <td>{{ sum.caissierId }}</td>
+              <td>{{ sum.operationDate | date:'shortDate' }}</td>
+              <td>{{ sum.startingBalance }}</td>
+              <td>{{ sum.totalDeposits}}</td>
+              <td>{{ sum.totalWithdrawals}}</td>
+              <td>{{ sum.endingBalance }}</td>
+              <td>{{ sum.numberOfTransactions }}</td>
+              <td>
+                  <span class="badge" [ngClass]="getCashRegisterStatusClass(sum.isClosed)">
+                    {{ getCashRegisterStatusDisplayName(sum.isClosed) }}
+                  </span>
+              </td>
+              <td>{{ sum.creationTimestamp | date:'short' }}</td>
+              <td>{{ sum.lastUpdateTimestamp | date:'short' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="summaries.length === 0 && !loading && !errorMessage" class="alert alert-info mt-3">
+          Aucun résumé de caisse trouvé pour cet intervalle de dates.
+        </div>
+
+      </div>
+    </app-card>
+  </div>
+</div>

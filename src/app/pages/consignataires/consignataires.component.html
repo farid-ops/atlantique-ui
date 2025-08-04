@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Consignataires" [options]="false">
+      <h4>Ajouter / Modifier un Consignataire</h4>
+      <form (ngSubmit)="selectedConsignataire ? updateConsignataire() : addConsignataire()">
+        <div class="form-group">
+          <label for="lettreManifeste">Lettre de Manifeste:</label>
+          <input
+            id="lettreManifeste"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.lettreManifeste"
+            name="lettreManifeste"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="designation">Désignation:</label>
+          <input
+            id="designation"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.designation"
+            name="designation"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          {{ selectedConsignataire ? 'Modifier Consignataire' : 'Ajouter Consignataire' }}
+        </button>
+        @if (selectedConsignataire) {
+          <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des Consignataires</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Lettre de Manifeste</th>
+            <th>Désignation</th>
+            <th>Date de Création</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (consignataire of consignataires; track consignataire.id) {
+              <tr>
+                <td>{{ consignataire.id }}</td>
+                <td>{{ consignataire.lettreManifeste }}</td>
+                <td>{{ consignataire.designation }}</td>
+                <td>{{ consignataire.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editConsignataire(consignataire)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteConsignataire(consignataire.id!)">Supprimer</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Aucun consignataire trouvé.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+/* src/app/pages/utilisateurs/user-list/user-list.component.scss */
+
+/* Keyframes pour le clignotement vert */
+@keyframes blink-green {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Keyframes pour le clignotement rouge */
+@keyframes blink-red {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Application des animations aux classes */
+.blinking-green {
+  animation: blink-green 1.5s infinite; /* Clignote toutes les 1.5 secondes */
+}
+
+.blinking-red {
+  animation: blink-red 1.5s infinite; /* Clignote toutes les 1.5 secondes */
+}
+
+/* Vous pouvez ajouter d'autres styles spécifiques à votre composant ici */

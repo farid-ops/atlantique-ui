@@ -1,0 +1,12 @@
+<ng-template #tokenExpiryModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Session sur le point d'expirer !</h5>
+  </div>
+  <div class="modal-body text-center">
+    <p>Votre session expirera dans quelques secondes. Voulez-vous la prolonger ?</p>
+    <p>
+      <button type="button" class="btn btn-primary me-2" (click)="modal.close('renew')">Renouveler la session</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.close('cancel')">Annuler (Déconnexion)</button>
+    </p>
+  </div>
+</ng-template>

@@ -1,0 +1,490 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Marchandises" [options]="false">
+      <h4>Ajouter / Modifier une Marchandise</h4>
+      <form (ngSubmit)="submitMarchandise(currentFormData.status!)" #marchandiseForm="ngForm" enctype="multipart/form-data">
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <h5 class="mt-4">Informations de la Marchandise</h5>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="typeMarchandiseSelect">Type de Marchandise: <span class="text-danger">*</span></label>
+            <select id="typeMarchandiseSelect" class="form-control" [(ngModel)]="currentFormData.typeMarchandiseSelect" name="typeMarchandiseSelect" (change)="onTypeMarchandiseChange($event)" [disabled]="!isFormEditable" required>
+              @for (option of typeMarchandiseOptions; track option) {
+                <option [value]="option">{{ option | titlecase }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['typeMarchandiseSelect']?.invalid && (marchandiseForm.controls['typeMarchandiseSelect']?.dirty || marchandiseForm.controls['typeMarchandiseSelect']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          @if (currentFormData.typeMarchandiseSelect === 'vehicule') {
+            <div class="form-group col-md-4">
+              <label for="nombreVehicule">Nombre de Véhicules: <span class="text-danger">*</span></label>
+              <input id="nombreVehicule" type="number" class="form-control" [(ngModel)]="currentFormData.nombreVehicule" name="nombreVehicule" (input)="onNombreVehiculeChange()" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+            </div>
+          }
+        </div>
+
+        @if (currentFormData.typeMarchandiseSelect === 'vehicule' && currentFormData.nombreVehicule && Number(currentFormData.nombreVehicule) > 1) {
+          <h5 class="mt-4">Détails des Véhicules</h5>
+          <button type="button" class="btn btn-info mt-2" (click)="addVehiculeItem()" [disabled]="!isFormEditable">
+            <i class="feather icon-plus"></i> Ajouter un véhicule
+          </button>
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th>Poids (kg) <span class="text-danger">*</span></th>
+                    <th>CAF <span class="text-danger">*</span></th>
+                    <th>Numéro de Châssis <span class="text-danger">*</span></th>
+                    <th>Visa <span class="text-danger">*</span></th>
+                    <th>Numéro de Douane <span class="text-danger">*</span></th>
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of vehiculesGroupage; track item; let i = $index) {
+                      <tr>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.poids" name="vehicule-poids-{{i}}" (input)="calculateVehiculeGroupageTotals()" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.caf" name="vehicule-caf-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.numeroChassis" name="vehicule-chassis-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.visa" name="vehicule-visa-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.numeroDouane" name="vehicule-douane-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required></td>
+                        <td>
+                          <button type="button" class="btn btn-danger btn-sm" (click)="removeVehiculeItem(i)" [disabled]="!isFormEditable">
+                            <i class="feather icon-trash-2"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="6" class="text-center">Aucun véhicule ajouté pour le moment.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+
+
+        @if (currentFormData.conteneur !== 'groupage' && !(currentFormData.typeMarchandiseSelect === 'vehicule' && currentFormData.nombreVehicule && Number(currentFormData.nombreVehicule) > 1)) {
+          <h5 class="mt-4">Informations du Conteneur</h5>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Conteneur: <span class="text-danger">*</span></label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="conteneurVrac"
+                       [value]="'vrac'" [(ngModel)]="currentFormData.conteneur" name="conteneurRadio" (change)="onConteneurTypeChange('vrac')" [disabled]="!isFormEditable" required>
+                <label class="form-check-label" for="conteneurVrac">Vrac</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="conteneurSimple"
+                       [value]="'simple'" [(ngModel)]="currentFormData.conteneur" name="conteneurRadio" (change)="onConteneurTypeChange('simple')" [disabled]="!isFormEditable" required>
+                <label class="form-check-label" for="conteneurSimple">Simple</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="conteneurGroupage"
+                       [value]="'groupage'" [(ngModel)]="currentFormData.conteneur" name="conteneurRadio" (change)="onConteneurTypeChange('groupage')" [disabled]="!isFormEditable" required>
+                <label class="form-check-label" for="conteneurGroupage">Groupage</label>
+              </div>
+              <div *ngIf="marchandiseForm.controls['conteneurRadio']?.invalid && (marchandiseForm.controls['conteneurRadio']?.dirty || marchandiseForm.controls['conteneurRadio']?.touched)"
+                   class="text-danger">
+                Ce champ est obligatoire.
+              </div>
+            </div>
+
+            @if (currentFormData.conteneur === 'simple') {
+              <div class="form-group col-md-4">
+                <label for="nombreConteneur">Nombre de Conteneurs: <span class="text-danger">*</span></label>
+                <input id="nombreConteneur" type="text" class="form-control" [(ngModel)]="currentFormData.nombreConteneur" name="nombreConteneur" (input)="onNombreConteneurChange()" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+                <div *ngIf="marchandiseForm.controls['nombreConteneur']?.invalid && (marchandiseForm.controls['nombreConteneur']?.dirty || marchandiseForm.controls['nombreConteneur']?.touched)"
+                     class="text-danger">
+                  Ce champ est obligatoire.
+                </div>
+              </div>
+              <div class="form-group col-md-4">
+                <label for="typeConteneur">Type de Conteneur (pieds): <span class="text-danger">*</span></label>
+                <select id="typeConteneur" class="form-control" [(ngModel)]="currentFormData.typeConteneur" name="typeConteneur" [disabled]="!isFormEditable" required>
+                  <option value="">-- Sélectionner --</option>
+                  <option value="10 pieds">10 pieds</option>
+                  <option value="20 pieds">20 pieds</option>
+                  <option value="30 pieds">30 pieds</option>
+                </select>
+                <div *ngIf="marchandiseForm.controls['typeConteneur']?.invalid && (marchandiseForm.controls['typeConteneur']?.dirty || marchandiseForm.controls['typeConteneur']?.touched)"
+                     class="text-danger">
+                  Ce champ est obligatoire.
+                </div>
+              </div>
+            }
+            @if (currentFormData.conteneur !== 'groupage') {
+              <div class="form-group col-md-4">
+                <label for="numeroDouane">Numéro de Douane: <span class="text-danger">*</span></label>
+                <input id="numeroDouane" type="text" class="form-control" [(ngModel)]="currentFormData.numeroDouane" name="numeroDouane" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+              </div>
+            }
+          </div>
+
+          <div class="row mt-3">
+            <div class="form-group col-md-4">
+              <label for="poids">Poids (kg): <span class="text-danger">*</span></label>
+              <input id="poids" type="text" class="form-control" [(ngModel)]="currentFormData.poids" name="poids" (input)="onPoidsChange()" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+              <div *ngIf="marchandiseForm.controls['poids']?.invalid && (marchandiseForm.controls['poids']?.dirty || marchandiseForm.controls['poids']?.touched)"
+                   class="text-danger">
+                Ce champ est obligatoire.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="nombreColis">Nombre de Colis: <span class="text-danger">*</span></label>
+              <input id="nombreColis" type="text" class="form-control" [(ngModel)]="currentFormData.nombreColis" name="nombreColis" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+              <div *ngIf="marchandiseForm.controls['nombreColis']?.invalid && (marchandiseForm.controls['nombreColis']?.dirty || marchandiseForm.controls['nombreColis']?.touched)"
+                   class="text-danger">
+                Ce champ est obligatoire.
+              </div>
+            </div>
+            @if (typeMarchandise === 'vehicule') {
+              <div class="form-group col-md-4">
+                <label for="numeroChassis">Numéro de Châssis: <span class="text-danger">*</span></label>
+                <input id="numeroChassis" type="text" class="form-control" [(ngModel)]="currentFormData.numeroChassis" name="numeroChassis" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+                <div *ngIf="marchandiseForm.controls['numeroChassis']?.invalid && (marchandiseForm.controls['numeroChassis']?.dirty || marchandiseForm.controls['numeroChassis']?.touched)"
+                     class="text-danger">
+                  Ce champ est obligatoire.
+                </div>
+              </div>
+            } @else if (typeMarchandise === 'hydrocarbure') {
+              <div class="form-group col-md-4">
+                <label for="volume">Volume: <span class="text-danger">*</span></label>
+                <input id="volume" type="text" class="form-control" [(ngModel)]="currentFormData.volume" name="volume" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+                <div *ngIf="marchandiseForm.controls['volume']?.invalid && (marchandiseForm.controls['volume']?.dirty || marchandiseForm.controls['volume']?.touched)"
+                     class="text-danger">
+                  Ce champ est obligatoire.
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (currentFormData.conteneur === 'groupage') {
+          <h5 class="mt-4">Détails des Articles</h5>
+          <button type="button" class="btn btn-info mt-2" (click)="addMarchandiseItem()" [disabled]="!isFormEditable">
+            <i class="feather icon-plus"></i> Ajouter un article
+          </button>
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th>Poids (kg) <span class="text-danger">*</span></th>
+                    <th>Nombre de Colis <span class="text-danger">*</span></th>
+                    <th>Numéro de BL <span class="text-danger">*</span></th>
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of marchandisesGroupage; track item; let i = $index) {
+                      <tr>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.poids" name="poids-{{i}}" (input)="calculateGroupageTotals()" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.nombreColis" name="nombreColis-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required></td>
+                        <td><input type="text" class="form-control" [(ngModel)]="item.numeroBl" name="numeroBl-{{i}}" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required></td>
+                        <td>
+                          <button type="button" class="btn btn-danger btn-sm" (click)="removeMarchandiseItem(i)" [disabled]="!isFormEditable">
+                            <i class="feather icon-trash-2"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="4" class="text-center">Aucun article ajouté pour le moment.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+
+        <h5 class="mt-4">Informations de Cargaison</h5>
+        <div class="row">
+          <div class="form-group col-md-4" *ngIf="currentFormData.conteneur !== 'groupage'">
+            <label for="idBl">Numéro de BL: <span class="text-danger">*</span></label>
+            <input id="idBl" type="text" class="form-control" [(ngModel)]="currentFormData.idBl" name="idBl" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required>
+            <div *ngIf="marchandiseForm.controls['idBl']?.invalid && (marchandiseForm.controls['idBl']?.dirty || marchandiseForm.controls['idBl']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="manifesteCargaison">Manifeste: <span class="text-danger">*</span></label>
+            <input id="manifesteCargaison" type="text" class="form-control" [(ngModel)]="currentFormData.manifesteCargaison" name="manifesteCargaison" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required>
+            <div *ngIf="marchandiseForm.controls['manifesteCargaison']?.invalid && (marchandiseForm.controls['manifesteCargaison']?.dirty || marchandiseForm.controls['manifesteCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="transporteurCargaison">Transporteur: <span class="text-danger">*</span></label>
+            <input id="transporteurCargaison" type="text" class="form-control" [(ngModel)]="currentFormData.transporteurCargaison" name="transporteurCargaison" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required>
+            <div *ngIf="marchandiseForm.controls['transporteurCargaison']?.invalid && (marchandiseForm.controls['transporteurCargaison']?.dirty || marchandiseForm.controls['transporteurCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="idConsignataireCargaison">Consignataire Cargaison: <span class="text-danger">*</span></label>
+            <select id="idConsignataireCargaison" class="form-control" [(ngModel)]="currentFormData.idConsignataireCargaison" name="idConsignataireCargaison" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner un consignataire --</option>
+              @for (consignataire of consignatairesList; track consignataire.id) {
+                <option [value]="consignataire.id">{{ consignataire.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idConsignataireCargaison']?.invalid && (marchandiseForm.controls['idConsignataireCargaison']?.dirty || marchandiseForm.controls['idConsignataireCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idNavireCargaison">Navire Cargaison: <span class="text-danger">*</span></label>
+            <select id="idNavireCargaison" class="form-control" [(ngModel)]="currentFormData.idNavireCargaison" name="idNavireCargaison" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner un navire --</option>
+              @for (navire of naviresList; track navire.id) {
+                <option [value]="navire.id">{{ navire.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idNavireCargaison']?.invalid && (marchandiseForm.controls['idNavireCargaison']?.dirty || marchandiseForm.controls['idNavireCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idPortEmbarquementCargaison">Port Embarquement: <span class="text-danger">*</span></label>
+            <select id="idPortEmbarquementCargaison" class="form-control" [(ngModel)]="currentFormData.idPortEmbarquementCargaison" name="idPortEmbarquementCargaison" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner --</option>
+              @for (port of portsList; track port.id) {
+                <option [value]="port.id">{{ port.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idPortEmbarquementCargaison']?.invalid && (marchandiseForm.controls['idPortEmbarquementCargaison']?.dirty || marchandiseForm.controls['idPortEmbarquementCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="dateDepartureNavireCargaison">Date Départ Navire: <span class="text-danger">*</span></label>
+            <input id="dateDepartureNavireCargaison" type="date" class="form-control"
+                   [(ngModel)]="currentFormData.dateDepartureNavireCargaison" name="dateDepartureNavireCargaison" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required>
+            <div *ngIf="marchandiseForm.controls['dateDepartureNavireCargaison']?.invalid && (marchandiseForm.controls['dateDepartureNavireCargaison']?.dirty || marchandiseForm.controls['dateDepartureNavireCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="dateArriveNavireCargaison">Date Arrivée Navire: <span class="text-danger">*</span></label>
+            <input id="dateArriveNavireCargaison" type="date" class="form-control"
+                   [(ngModel)]="currentFormData.dateArriveNavireCargaison" name="dateArriveNavireCargaison" [readonly]="!isFormEditable" [disabled]="!isFormEditable" required>
+            <div *ngIf="marchandiseForm.controls['dateArriveNavireCargaison']?.invalid && (marchandiseForm.controls['dateArriveNavireCargaison']?.dirty || marchandiseForm.controls['dateArriveNavireCargaison']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="numVoyage">Numéro de Voyage: <span class="text-danger">*</span></label>
+            <input id="numVoyage" type="text" class="form-control" [(ngModel)]="currentFormData.numVoyage" name="numVoyage" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required>
+            <div *ngIf="marchandiseForm.controls['numVoyage']?.invalid && (marchandiseForm.controls['numVoyage']?.dirty || marchandiseForm.controls['numVoyage']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+        </div>
+
+        <h5 class="mt-4">Liens Associés</h5>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="idNatureMarchandise">Nature Marchandise: <span class="text-danger">*</span></label>
+            <select id="idNatureMarchandise" class="form-control" [(ngModel)]="currentFormData.idNatureMarchandise" name="idNatureMarchandise" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner --</option>
+              @for (nm of natureMarchandisesList; track nm.id) {
+                <option [value]="nm.id">{{ nm.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idNatureMarchandise']?.invalid && (marchandiseForm.controls['idNatureMarchandise']?.dirty || marchandiseForm.controls['idNatureMarchandise']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idArmateur">Armateur: <span class="text-danger">*</span></label>
+            <select id="idArmateur" class="form-control" [(ngModel)]="currentFormData.idArmateur" name="idArmateur" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner --</option>
+              @for (armateur of armateursList; track armateur.id) {
+                <option [value]="armateur.id">{{ armateur.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idArmateur']?.invalid && (marchandiseForm.controls['idArmateur']?.dirty || marchandiseForm.controls['idArmateur']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idTransitaire">Transitaire: <span class="text-danger">*</span></label>
+            <select id="idTransitaire" class="form-control" [(ngModel)]="currentFormData.idTransitaire" name="idTransitaire" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner --</option>
+              @for (transitaire of transitairesList; track transitaire.id) {
+                <option [value]="transitaire.id">{{ transitaire.designation }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idTransitaire']?.invalid && (marchandiseForm.controls['idTransitaire']?.dirty || marchandiseForm.controls['idTransitaire']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="idImportateur">Importateur: <span class="text-danger">*</span></label>
+            <select id="idImportateur" class="form-control" [(ngModel)]="currentFormData.idImportateur" name="idImportateur" [disabled]="!isFormEditable" required>
+              <option value="">-- Sélectionner --</option>
+              @for (importateur of importateursList; track importateur.id) {
+                <option [value]="importateur.id">{{ importateur.nom }} {{ importateur.prenom }}</option>
+              }
+            </select>
+            <div *ngIf="marchandiseForm.controls['idImportateur']?.invalid && (marchandiseForm.controls['idImportateur']?.dirty || marchandiseForm.controls['idImportateur']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+          <div class="form-group col-md-8">
+            <label for="observation">Observation: <span class="text-danger">*</span></label>
+            <textarea id="observation" class="form-control" [(ngModel)]="currentFormData.observation" name="observation" rows="3" [readonly]="!isFormEditable" [disabled]="!isFormEditable" autocomplete="off" required></textarea>
+            <div *ngIf="marchandiseForm.controls['observation']?.invalid && (marchandiseForm.controls['observation']?.dirty || marchandiseForm.controls['observation']?.touched)"
+                 class="text-danger">
+              Ce champ est obligatoire.
+            </div>
+          </div>
+        </div>
+
+        <h5 class="mt-4">Calculs et Paramètres</h5>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="be">Nombre de BE:</label>
+            <input id="be" type="text" class="form-control" [(ngModel)]="currentFormData.be" name="be" [readonly]="true">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="coutBsc">Coût BSC:</label>
+            <input id="coutBsc" type="text" class="form-control" [(ngModel)]="currentFormData.coutBsc" name="coutBsc" [readonly]="true">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="totalBePrice">Prix Total BE:</label>
+            <input id="totalBePrice" type="text" class="form-control" [(ngModel)]="currentFormData.totalBePrice" name="totalBePrice" [readonly]="true">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4" *ngIf="typeMarchandise === 'vehicule'">
+            <label for="visa">Visa:</label>
+            <input id="visa" type="text" class="form-control" [(ngModel)]="currentFormData.visa" name="visa" [readonly]="true">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="totalQuittance">Total Quittance:</label>
+            <input id="totalQuittance" type="text" class="form-control" [(ngModel)]="currentFormData.totalQuittance" name="totalQuittance" [readonly]="true">
+          </div>
+          <div class="form-group col-md-4">
+            <label>Régularisation:</label><br>
+            <input type="checkbox" [(ngModel)]="currentFormData.regularisation" name="regularisation" (change)="onRegularisationChange()" [disabled]="!isFormEditable">
+          </div>
+          <div class="form-group col-md-4">
+            <label>Exonération:</label><br>
+            <input type="checkbox" [(ngModel)]="currentFormData.exoneration" name="exoneration" (change)="onExonerationChange()" [disabled]="!isFormEditable">
+          </div>
+        </div>
+
+        <h5 class="mt-4">Documents de Cargaison (PDF)</h5>
+        <div class="row file-upload-section">
+          <div class="form-group col-md-4">
+            <label for="blFile">Fichier BL <span *ngIf="!currentFormData.blFile" class="text-danger">*</span></label>
+            <input type="file" id="blFile" class="form-control" (change)="onFileSelected($event, 'blFile')" accept="application/pdf" [disabled]="!isFormEditable" [required]="!currentFormData.blFile">
+            <div class="file-info mt-2" *ngIf="currentFormData.blFile">
+              <i class="feather icon-file-text me-1"></i>
+              <a [href]="getFileUrl('blFile')" target="_blank">{{ currentFormData.blFile }}</a>
+              <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeFile('blFile')" [disabled]="!isFormEditable">
+                <i class="feather icon-x-circle"></i> Supprimer
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <label for="declarationFile">Déclaration en douane <span *ngIf="!currentFormData.declarationDouaneFile" class="text-danger">*</span></label>
+            <input type="file" id="declarationFile" class="form-control" (change)="onFileSelected($event, 'declarationDouaneFile')" accept="application/pdf" [disabled]="!isFormEditable" [required]="!currentFormData.declarationDouaneFile">
+            <div class="file-info mt-2" *ngIf="currentFormData.declarationDouaneFile">
+              <i class="feather icon-file-text me-1"></i>
+              <a [href]="getFileUrl('declarationDouaneFile')" target="_blank">{{ currentFormData.declarationDouaneFile }}</a>
+              <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeFile('declarationDouaneFile')" [disabled]="!isFormEditable">
+                <i class="feather icon-x-circle"></i> Supprimer
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <label for="factureFile">Facture Commerciale <span *ngIf="!currentFormData.factureCommercialeFile" class="text-danger">*</span></label>
+            <input type="file" id="factureFile" class="form-control" (change)="onFileSelected($event, 'factureCommercialeFile')" accept="application/pdf" [disabled]="!isFormEditable" [required]="!currentFormData.factureCommercialeFile">
+            <div class="file-info mt-2" *ngIf="currentFormData.factureCommercialeFile">
+              <i class="feather icon-file-text me-1"></i>
+              <a [href]="getFileUrl('factureCommercialeFile')" target="_blank">{{ currentFormData.factureCommercialeFile }}</a>
+              <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeFile('factureCommercialeFile')" [disabled]="!isFormEditable">
+                <i class="feather icon-x-circle"></i> Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" (click)="submitMarchandise(MarchandiseStatus.BROUILLON)"
+                  *ngIf="isFormEditable && (currentUserRoles.has('OPERATEUR') || currentUserRoles.has('ADMIN'))">
+            <i class="feather icon-save"></i> Enregistrer Brouillon
+          </button>
+
+          <button type="button" class="btn btn-primary me-2" (click)="submitMarchandise(MarchandiseStatus.SOUMIS_POUR_VALIDATION)"
+                  *ngIf="canSubmitForValidation() && isFormEditable">
+            <i class="feather icon-send"></i> Soumettre pour Validation
+          </button>
+
+          <ng-container *ngIf="canValidateReject()">
+            <button type="button" class="btn btn-success me-2" (click)="onValidateOrReject(true)">
+              <i class="feather icon-check-circle"></i> Valider
+            </button>
+            <button type="button" class="btn btn-warning me-2" (click)="onValidateOrReject(false)">
+              <i class="feather icon-x-circle"></i> Rejeter
+            </button>
+          </ng-container>
+
+          <button type="button" class="btn btn-info me-2"
+                  *ngIf="selectedMarchandise && hasAvailableBe(selectedMarchandise) && selectedMarchandise.status === MarchandiseStatus.VALIDE && (currentUserRoles.has('OPERATEUR') || currentUserRoles.has('ADMIN'))">
+            <i class="feather icon-file-plus"></i> Créer Bon d'Expédition
+          </button>
+
+          <button type="button" class="btn btn-danger me-2" (click)="resetForm()"
+                  *ngIf="!currentUserRoles.has('CAISSIER')">
+            <i class="feather icon-x-circle"></i> Vider le formulaire
+          </button>
+
+          <button type="button" class="btn btn-light" (click)="cancelEdit()">
+            <i class="feather icon-arrow-left"></i> Annuler
+          </button>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

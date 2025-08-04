@@ -1,0 +1,24 @@
+/* styles.scss ou src/app/app.component.scss */
+
+.snackbar-success {
+  background-color: #4CAF50 !important; /* Vert pour succès */
+  color: white !important;
+}
+
+.snackbar-error {
+  background-color: #F44336 !important; /* Rouge pour erreur */
+  color: white !important;
+}
+
+.snackbar-info {
+  background-color: #2196F3 !important; /* Bleu pour info */
+  color: white !important;
+}
+
+.mat-snack-bar-container {
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 250px;
+  max-width: 500px;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+}

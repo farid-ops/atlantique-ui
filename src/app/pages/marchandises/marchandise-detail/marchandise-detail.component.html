@@ -1,0 +1,106 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Détails de la Marchandise" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des détails de la marchandise...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="marchandise && !loading">
+          <h5 class="mb-4">Informations Générales</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3"><strong>ID Marchandise:</strong> {{ marchandise.id }}</div>
+            <div class="col-md-6 mb-3"><strong>Type Marchandise:</strong> {{ marchandise.typeMarchandiseSelect | titlecase }}</div>
+            <div class="col-md-6 mb-3"><strong>CAF:</strong> {{ marchandise.caf }}</div>
+            <div class="col-md-6 mb-3"><strong>Poids:</strong> {{ marchandise.poids }} kg</div>
+            <div class="col-md-6 mb-3"><strong>Type (Import/Export):</strong> {{ marchandise.type }}</div>
+            <div class="col-md-6 mb-3"><strong>Nombre Colis:</strong> {{ marchandise.nombreColis }}</div>
+            <div class="col-md-6 mb-3"><strong>Numéro Châssis:</strong> {{ marchandise.numeroChassis }}</div>
+            <div class="col-md-6 mb-3"><strong>Numéro Douane:</strong> {{ marchandise.numeroDouane }}</div>
+            <div class="col-md-6 mb-3"><strong>Nombre Conteneur:</strong> {{ marchandise.nombreConteneur }}</div>
+            <div class="col-md-6 mb-3"><strong>Régularisation:</strong> {{ marchandise.regularisation ? 'Oui' : 'Non' }}</div>
+            <div class="col-md-6 mb-3"><strong>Exonération:</strong> {{ marchandise.exoneration ? 'Oui' : 'Non' }}</div>
+            <div class="col-md-6 mb-3"><strong>Conteneur:</strong> {{ marchandise.conteneur | titlecase }}</div>
+            <div class="col-md-6 mb-3"><strong>Type Conteneur:</strong> {{ marchandise.typeConteneur }}</div>
+            <div class="col-md-6 mb-3"><strong>Volume:</strong> {{ marchandise.volume }}</div>
+            <div class="col-md-6 mb-3"><strong>Observation:</strong> {{ marchandise.observation }}</div>
+            <div class="col-md-6 mb-3"><strong>Numéro Voyage:</strong> {{ marchandise.numVoyage }}</div>
+            <div class="col-md-6 mb-3">
+              <strong>Statut:</strong>
+              <span class="btn btn-sm" [ngClass]="getMarchandiseStatusClass(marchandise.status)">
+                {{ getMarchandiseStatusDisplayName(marchandise.status) }}
+              </span>
+            </div>
+          </div>
+
+          <h5 class="mt-4 mb-3">Calculs Marchandise</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3"><strong>BE:</strong> {{ marchandise.be }}</div>
+            <div class="col-md-6 mb-3"><strong>Coût BSC:</strong> {{ marchandise.coutBsc }}</div>
+            <div class="col-md-6 mb-3"><strong>Prix Total BE:</strong> {{ marchandise.totalBePrice }}</div>
+            <div class="col-md-6 mb-3"><strong>Visa:</strong> {{ marchandise.visa }}</div>
+            <div class="col-md-6 mb-3"><strong>Total Quittance:</strong> {{ marchandise.totalQuittance }}</div>
+          </div>
+
+          <h5 class="mt-4 mb-3">Informations Cargaison</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3"><strong>ID BL:</strong> {{ marchandise.idBl }}</div>
+            <div class="col-md-6 mb-3"><strong>Manifeste Cargaison:</strong> {{ marchandise.manifesteCargaison }}</div>
+            <div class="col-md-6 mb-3"><strong>Site Cargaison:</strong> {{ getSiteDesignation(marchandise.idSiteCargaison) }}</div>
+            <div class="col-md-6 mb-3"><strong>Consignataire Cargaison:</strong> {{ getConsignataireDesignation(marchandise.idConsignataireCargaison) }}</div>
+            <div class="col-md-6 mb-3"><strong>Transporteur Cargaison:</strong> {{ marchandise.transporteurCargaison }}</div>
+            <div class="col-md-6 mb-3"><strong>Lieu Emission Cargaison:</strong> {{ getSiteDesignation(marchandise.lieuEmissionCargaison) }}</div>
+            <div class="col-md-6 mb-3"><strong>Navire Cargaison:</strong> {{ getNavireDesignation(marchandise.idNavireCargaison) }}</div>
+            <div class="col-md-6 mb-3"><strong>Date Départ Navire:</strong> {{ marchandise.dateDepartureNavireCargaison | date:'fullDate' }}</div>
+            <div class="col-md-6 mb-3"><strong>Date Arrivée Navire:</strong> {{ marchandise.dateArriveNavireCargaison | date:'fullDate' }}</div>
+            <div class="col-md-6 mb-3"><strong>Port Embarquement:</strong> {{ getPortDesignation(marchandise.idPortEmbarquementCargaison) }}</div>
+            <div class="col-md-6 mb-3"><strong>Port Débarquement:</strong> {{ getPortDesignation(marchandise.idPortDebarquementCargaison) }}</div>
+          </div>
+
+          <h5 class="mt-4 mb-3">Historique</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3"><strong>Soumis par:</strong> {{ getUtilisateurName(marchandise.submittedByUserId) }}</div>
+            <div class="col-md-6 mb-3"><strong>Validé par:</strong> {{ getUtilisateurName(marchandise.validatedByUserId) }}</div>
+            <div class="col-md-6 mb-3"><strong>Date de Soumission:</strong> {{ marchandise.submissionDate | date:'fullDate' }}</div>
+            <div class="col-md-6 mb-3"><strong>Date de Validation:</strong> {{ marchandise.validationDate | date:'fullDate' }}</div>
+            <div class="col-md-6 mb-3"><strong>Date de Création:</strong> {{ marchandise.creationDate | date:'fullDate' }} - {{ marchandise.creationDate | date:'mediumTime' }}</div>
+            <div class="col-md-6 mb-3"><strong>Date de Dernière Modification:</strong> {{ marchandise.modificationDate | date:'fullDate' }} - {{ marchandise.modificationDate | date:'mediumTime' }}</div>
+          </div>
+
+          <h5 class="mt-4 mb-3" *ngIf="marchandise.marchandisesGroupage && marchandise.marchandisesGroupage.length > 0">Articles Groupage</h5>
+          <div class="table-responsive mt-3" *ngIf="marchandise.marchandisesGroupage && marchandise.marchandisesGroupage.length > 0">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>Poids (kg)</th>
+                <th>Nombre Colis</th>
+                <th>Numéro BL</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let item of marchandise.marchandisesGroupage">
+                <td>{{ item.poids }}</td>
+                <td>{{ item.nombreColis }}</td>
+                <td>{{ item.numeroBl }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-primary me-2" (click)="editMarchandise(marchandise?.id)">
+            <i class="feather icon-edit"></i> Modifier
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="goBack()">
+            <i class="feather icon-arrow-left"></i> Retour à la liste
+          </button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

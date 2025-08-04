@@ -1,0 +1,120 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des BLs" [options]="false">
+      <h4>Ajouter / Modifier un BL</h4>
+      <form> <div class="form-group">
+        <label for="designation">Désignation du BL:</label>
+        <input
+          id="designation"
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentFormData.designation"
+          name="designation"
+          required
+        />
+      </div>
+        <div class="form-group">
+          <label for="fileUpload">Uploader Document BL (PDF, max 10 Mo):</label>
+          <input
+            type="file"
+            id="fileUpload"
+            class="form-control"
+            (change)="onFileSelected($event)"
+            accept="application/pdf"
+          />
+          @if (selectedFile) {
+            <small class="form-text text-muted">Fichier sélectionné: {{ selectedFile.name }}</small>
+          }
+        </div>
+
+        <div class="d-grid mt-3">
+          <button type="button" class="btn btn-primary" (click)="submitBl()" [disabled]="isUploading">
+            <span *ngIf="isUploading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="!isUploading">{{ selectedBl ? 'Mettre à jour le BL' : 'Uploader & Créer le BL' }}</span>
+          </button>
+        </div>
+        @if (selectedBl) {
+          <button type="button" class="btn btn-secondary mt-2 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des BLs</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th (click)="changeSort('id')">ID <i *ngIf="sortBy === 'id'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('designation')">Désignation <i *ngIf="sortBy === 'designation'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Nom du Fichier</th>
+            <th (click)="changeSort('creationDate')">Date de Création <i *ngIf="sortBy === 'creationDate'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (bl of bls; track bl.id) {
+              <tr>
+                <td>{{ bl.id }}</td>
+                <td>{{ bl.designation }}</td>
+                <td>{{ bl.filename || 'N/A' }}</td>
+                <td>{{ bl.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editBl(bl)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteBl(bl.id!)">Supprimer</button>
+                  <button class="btn btn-success btn-sm ms-2" [disabled]="!bl.filename" (click)="downloadBl(bl.id!, bl.filename!)">Télécharger</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Aucun BL trouvé.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} BLs au total)
+        </div>
+        <div>
+          Éléments par page:
+          <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+            </li>
+
+            @for (page of getPagesArray(); track page) {
+              <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                  {{ getDisplayPageNumber(page) }}
+                </a>
+              </li>
+            }
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="nextPage()">Suivant</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </app-card>
+  </div>
+</div>

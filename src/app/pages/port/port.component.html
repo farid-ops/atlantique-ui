@@ -1,0 +1,134 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Ports" [options]="false">
+      <h4>Ajouter / Modifier un Port</h4>
+      <form (ngSubmit)="selectedPort ? updatePort() : addPort()">
+        <div class="form-group">
+          <label for="designation">Désignation du Port:</label>
+          <input
+            id="designation"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.designation"
+            name="designation"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="paysForm">Pays:</label>
+          <select
+            id="paysForm"
+            class="form-control"
+            [(ngModel)]="currentFormData.idPays"
+            name="idPaysForm"
+            required
+          >
+            <option value="">-- Sélectionner un pays --</option>
+            @for (pays of paysList; track pays.id) {
+              <option [value]="pays.id">{{ pays.designation }}</option>
+            }
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          {{ selectedPort ? 'Modifier Port' : 'Ajouter Port' }}
+        </button>
+        @if (selectedPort) {
+          <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des Ports</h4>
+
+      <div class="form-group mt-3 col-md-4">
+        <label for="countryFilter">Filtrer par Pays:</label>
+        <select
+          id="countryFilter"
+          class="form-control"
+          [(ngModel)]="selectedCountryFilter"
+          name="countryFilter"
+          (change)="onCountryFilterChange($event)"
+        >
+          <option value="">-- Tous les Pays --</option>
+          @for (pays of paysList; track pays.id) {
+            <option [value]="pays.id">{{ pays.designation }}</option>
+          }
+        </select>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th (click)="changeSort('id')">ID <i *ngIf="sortBy === 'id'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('designation')">Désignation <i *ngIf="sortBy === 'designation'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Pays</th>
+            <th (click)="changeSort('creationDate')">Date de Création <i *ngIf="sortBy === 'creationDate'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (port of portsList; track port.id) {
+              <tr>
+                <td>{{ port.id }}</td>
+                <td>{{ port.designation }}</td>
+                <td>{{ getPaysDesignation(port.idPays) }}</td>
+                <td>{{ port.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editPort(port)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deletePort(port.id!)">Supprimer</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Aucun port trouvé.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} ports au total)
+        </div>
+        <div>
+          Éléments par page:
+          <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+            </li>
+
+            @for (page of getPagesArray(); track page) {
+              <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                  {{ getDisplayPageNumber(page) }}
+                </a>
+              </li>
+            }
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="nextPage()">Suivant</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </app-card>
+  </div>
+</div>

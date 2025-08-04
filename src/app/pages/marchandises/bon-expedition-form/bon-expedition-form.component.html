@@ -1,0 +1,101 @@
+<h2 mat-dialog-title>Créer un Bon d'Expédition</h2>
+
+<mat-dialog-content [formGroup]="bonExpeditionForm">
+  <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+    {{ errorMessage }}
+  </div>
+
+  <h5 class="mb-3">Marchandise Associée</h5>
+  <div class="alert alert-info mb-4">
+    <div class="row">
+      <div class="col-md-6">
+        <strong>ID Marchandise:</strong> {{ marchandiseDetails.id }}<br>
+        <strong>CAF:</strong> {{ marchandiseDetails.caf }}<br>
+        <strong>Poids initial:</strong> {{ marchandiseDetails.poids }} kg<br>
+        <strong>BE initiaux:</strong> {{ marchandiseDetails.be }}
+      </div>
+      <div class="col-md-6">
+        <strong>Poids restant:</strong> {{ marchandisePoids }} kg<br>
+        <strong>BE restants:</strong> {{ marchandiseBeCount }}<br>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="mb-3">Détails du Bon d'Expédition</h5>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="nombreColis">Nombre de Colis: <span class="text-danger">*</span></label>
+      <input id="nombreColis" type="text" formControlName="nombreColis" class="form-control">
+      <div *ngIf="bonExpeditionForm.get('nombreColis')?.invalid && bonExpeditionForm.get('nombreColis')?.touched" class="text-danger">
+        Le nombre de colis est obligatoire et doit être un nombre entier.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="immatriculation">Immatriculation: <span class="text-danger">*</span></label>
+      <input id="immatriculation" type="text" formControlName="immatriculation" class="form-control">
+      <div *ngIf="bonExpeditionForm.get('immatriculation')?.invalid && bonExpeditionForm.get('immatriculation')?.touched" class="text-danger">
+        L'immatriculation est obligatoire.
+      </div>
+    </div>
+  </div>
+
+  <h5 class="mt-4 mb-3">Informations Destinataire (pré-remplies)</h5>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="nom">Nom du destinataire: <span class="text-danger">*</span></label>
+      <input id="nom" type="text" formControlName="nom" class="form-control" readonly>
+      <div *ngIf="bonExpeditionForm.get('nom')?.invalid && bonExpeditionForm.get('nom')?.touched" class="text-danger">
+        Le nom du destinataire est obligatoire.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="prenom">Prénom du destinataire: <span class="text-danger">*</span></label>
+      <input id="prenom" type="text" formControlName="prenom" class="form-control" readonly>
+      <div *ngIf="bonExpeditionForm.get('prenom')?.invalid && bonExpeditionForm.get('prenom')?.touched" class="text-danger">
+        Le prénom du destinataire est obligatoire.
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="destinataire">Transporteur (Nom complet): <span class="text-danger">*</span></label>
+    <input id="destinataire" type="text" formControlName="destinataire" class="form-control" readonly>
+    <div *ngIf="bonExpeditionForm.get('destinataire')?.invalid && bonExpeditionForm.get('destinataire')?.touched" class="text-danger">
+      Le destinataire est obligatoire.
+    </div>
+  </div>
+
+  <h5 class="mt-4 mb-3">Autres Détails</h5>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="poids">Poids (kg): <span class="text-danger">*</span></label>
+      <input id="poids" type="text" formControlName="poids" class="form-control">
+      <div *ngIf="bonExpeditionForm.get('poids')?.invalid && bonExpeditionForm.get('poids')?.touched" class="text-danger">
+        Le poids est obligatoire et doit être numérique.
+        <span *ngIf="bonExpeditionForm.get('poids')?.hasError('maxPoids')" class="text-danger">
+          (Max: {{ marchandisePoids }} kg)
+        </span>
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="valeur">Valeur: <span class="text-danger">*</span></label>
+      <input id="valeur" type="text" formControlName="valeur" class="form-control">
+      <div *ngIf="bonExpeditionForm.get('valeur')?.invalid && bonExpeditionForm.get('valeur')?.touched" class="text-danger">
+        La valeur est obligatoire et doit être numérique.
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="observation">Observation:</label>
+    <textarea id="observation" formControlName="observation" class="form-control" rows="3"></textarea>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-button color="primary" (click)="onSubmit()" [disabled]="bonExpeditionForm.invalid || loading">
+    Créer {{ loading ? '...' : '' }}
+  </button>
+</mat-dialog-actions>

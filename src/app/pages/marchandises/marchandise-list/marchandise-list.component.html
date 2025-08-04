@@ -1,0 +1,103 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Liste des Marchandises" [options]="false">
+      <button *ngIf="currentUserRoles.has('ADMIN') || currentUserRoles.has('OPERATEUR')" class="btn btn-success mb-3" (click)="createNewMarchandise()">
+        <i class="feather icon-plus"></i> Créer une nouvelle Marchandise
+      </button>
+
+      <div class="table-responsive mt-4">
+        <div *ngIf="loading" class="text-center">
+          Chargement des marchandises...
+        </div>
+        <div *ngIf="errorMessage && !loading" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <table class="table table-hover" *ngIf="marchandises.length > 0 && !loading">
+          <thead>
+          <tr>
+            <th (click)="onSortChangeClick('id')">ID <i *ngIf="sortBy === 'id'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="onSortChangeClick('caf')">CAF <i *ngIf="sortBy === 'caf'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="onSortChangeClick('poids')">Poids <i *ngIf="sortBy === 'poids'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="onSortChangeClick('type')">Type <i *ngIf="sortBy === 'type'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="onSortChangeClick('conteneur')">Conteneur Type <i *ngIf="sortBy === 'conteneur'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="onSortChangeClick('status')">Statut <i *ngIf="sortBy === 'status'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (marchandise of marchandises; track marchandise.id) {
+              <tr>
+                <td>{{ marchandise.id }}</td>
+                <td>{{ marchandise.caf }}</td>
+                <td>{{ marchandise.poids }}</td>
+                <td>{{ marchandise.type }}</td>
+                <td>{{ getConteneurTypeDisplay(marchandise.conteneur) }}</td>
+                <td>
+                  <span class="btn btn-sm" [ngClass]="getMarchandiseStatusClass(marchandise.status)">
+                    {{ getMarchandiseStatusDisplayName(marchandise.status) }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editMarchandise(marchandise)"
+                          *ngIf="canEditMarchandise(marchandise)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteMarchandise(marchandise.id!)"
+                          *ngIf="canDeleteMarchandise(marchandise)">Supprimer</button>
+                  <button class="btn btn-primary btn-sm ms-2" [routerLink]="['/marchandises/details', marchandise.id]">Détails</button>
+                  <button class="btn btn-success btn-sm ms-2"
+                          *ngIf="canCreateBonExpedition(marchandise)"
+                          (click)="openCreateBonExpeditionDialog(marchandise)">Créer BE</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center">Aucune marchandise trouvée.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="marchandises.length === 0 && !loading && !errorMessage" class="alert alert-info mt-3">
+        Aucune marchandise trouvée.
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 0">
+        <div>
+          Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} marchandises au total)
+        </div>
+        <div>
+          Éléments par page:
+          <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChangeClick(0)">Première</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChangeClick(currentPage - 1)">Précédent</a>
+            </li>
+
+            @for (page of getPagesArray(); track page) {
+              <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                <a class="page-link" href="javascript:void(0)" (click)="onPageChangeClick(page)">
+                  {{ getDisplayPageNumber(page) }}
+                </a>
+              </li>
+            }
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChangeClick(totalPages - 1)">Dernière</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </app-card>
+  </div>
+</div>

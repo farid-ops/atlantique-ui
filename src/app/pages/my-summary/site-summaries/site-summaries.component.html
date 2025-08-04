@@ -1,0 +1,66 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Résumés de Caisse par Site" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des résumés de caisse du site...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <div class="form-group row mb-4">
+          <label for="startDate" class="col-lg-2 col-form-label">Date Début:</label>
+          <div class="col-lg-4">
+            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" (change)="loadSiteSummaries()">
+          </div>
+          <label for="endDate" class="col-lg-2 col-form-label">Date Fin:</label>
+          <div class="col-lg-4">
+            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" (change)="loadSiteSummaries()">
+          </div>
+        </div>
+
+        <div *ngIf="siteSummaries.length > 0 && !loading" class="table-responsive">
+          <h5 class="mb-3">Résumés pour le site (ID: {{ currentUserSiteId }}) du {{ startDate | date:'fullDate' }} au {{ endDate | date:'fullDate' }}</h5>
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>ID Caisse</th>
+              <th>ID Caissier</th>
+              <th>Solde Ouverture</th>
+              <th>Total Dépôts</th>
+              <th>Total Retraits</th>
+              <th>Solde Clôture</th>
+              <th># Transactions</th>
+              <th>Statut</th>
+              <th>Date Opération</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let summary of siteSummaries">
+              <td>{{ summary.id }}</td>
+              <td>{{ summary.caissierId }}</td>
+              <td>{{ summary.startingBalance | currency:'XOF':'symbol':'1.2-2':'fr' }}</td>
+              <td>{{ summary.totalDeposits | currency:'XOF':'symbol':'1.2-2':'fr' }}</td>
+              <td>{{ summary.totalWithdrawals | currency:'XOF':'symbol':'1.2-2':'fr' }}</td>
+              <td>{{ summary.endingBalance | currency:'XOF':'symbol':'1.2-2':'fr' }}</td>
+              <td>{{ summary.numberOfTransactions }}</td>
+              <td>
+                  <span class="badge" [ngClass]="getCashRegisterStatusClass(summary.isClosed)">
+                    {{ getCashRegisterStatusDisplayName(summary.isClosed) }}
+                  </span>
+              </td>
+              <td>{{ summary.operationDate | date:'shortDate' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="siteSummaries.length === 0 && !loading && !errorMessage" class="alert alert-info">
+          Aucun résumé de caisse trouvé pour ce site et cet intervalle de dates.
+        </div>
+
+      </div>
+    </app-card>
+  </div>
+</div>

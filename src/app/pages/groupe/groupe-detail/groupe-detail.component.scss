@@ -1,0 +1,117 @@
+:root {
+  --primary-color: #007bff; /* Bleu Bootstrap par défaut */
+  --primary-rgb: 0, 123, 255;
+  --secondary-color: #6c757d;
+  --info-color: #17a2b8;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --dark-text-color: #343a40;
+  --secondary-text-color: #6c757d;
+  --border-color: #e9ecef;
+  --light-border-color: #f8f9fa;
+  --card-bg-color: #ffffff;
+  --light-bg-color: #f8f9fa;
+  --white: #ffffff;
+}
+
+.group-detail-page {
+  padding: 20px;
+  background-color: var(--light-bg-color); /* Un fond léger pour la page */
+}
+
+.page-header h3 {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.page-header h3 .feather {
+  vertical-align: middle;
+  font-size: 1.5rem;
+}
+
+.page-header hr {
+  border-top: 2px solid var(--primary-color);
+  opacity: 0.75;
+  margin-top: 0.5rem;
+}
+
+/* Styles pour les listes de détails */
+.detail-list .list-group-item {
+  padding: 0.75rem 1rem;
+  border-color: var(--border-color); /* Couleur de bordure plus discrète */
+  background-color: var(--card-bg-color); /* Assure le fond blanc */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.detail-list .list-group-item:first-child {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.detail-list .list-group-item:last-child {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  border-bottom: 1px solid var(--border-color); /* Assure une bordure basse */
+}
+
+.detail-list .list-group-item div.fw-bold {
+  color: var(--dark-text-color); /* Rend les labels plus foncés */
+}
+
+.detail-list .list-group-item span {
+  color: var(--secondary-text-color); /* Rend les valeurs un peu plus claires */
+}
+
+/* Styles pour les titres de section */
+h5 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color); /* Ligne de séparation pour les sections */
+}
+
+h5 .feather {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+/* Styles pour les sections d'images */
+.card.shadow-sm {
+  border: none;
+  transition: transform 0.2s ease-in-out;
+}
+.card.shadow-sm:hover {
+  transform: translateY(-3px); /* Effet léger au survol */
+}
+
+.card-body h6.card-title {
+  font-size: 1rem;
+  color: var(--secondary-text-color);
+}
+
+.card-body img.img-fluid {
+  border: 1px solid var(--border-color);
+  padding: 5px;
+  background-color: var(--white);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Ombre douce pour les images */
+}
+
+.card-text.small {
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+}
+
+/* Styles du pied de carte */
+.card-footer {
+  border-top: 1px solid var(--border-color);
+}
+
+.btn.rounded-pill {
+  border-radius: 50rem !important; /* Rend les boutons plus arrondis */
+  padding: 0.5rem 1.5rem;
+}

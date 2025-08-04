@@ -1,0 +1,98 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Liste des Bons d'Expédition" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des Bons d'Expédition...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th (click)="changeSort('id')">ID <i *ngIf="sortBy === 'id'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('idMarchandise')">ID Marchandise <i *ngIf="sortBy === 'idMarchandise'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('nombreColis')">Colis <i *ngIf="sortBy === 'nombreColis'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('immatriculation')">Immatriculation <i *ngIf="sortBy === 'immatriculation'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('destinataire')">Destinataire <i *ngIf="sortBy === 'destinataire'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('poids')">Poids <i *ngIf="sortBy === 'poids'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('valeur')">Valeur <i *ngIf="sortBy === 'valeur'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('valide')">Statut BE <i *ngIf="sortBy === 'valide'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('creationDate')">Date Création <i *ngIf="sortBy === 'creationDate'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (be of bonExpeditions; track be.id) {
+                <tr>
+                  <td>{{ be.id }}</td>
+                  <td>{{ be.idMarchandise }}</td>
+                  <td>{{ be.nombreColis }}</td>
+                  <td>{{ be.immatriculation }}</td>
+                  <td>{{ be.destinataire }}</td>
+                  <td>{{ be.poids }}</td>
+                  <td>{{ be.valeur }}</td>
+                  <td>
+                    <span class="btn btn-sm" [ngClass]="getBonExpeditionStatusClass(be.valide)">
+                      {{ getBonExpeditionStatusDisplayName(be.valide) }}
+                    </span>
+                  </td>
+                  <td>{{ be.creationDate | date:'shortDate' }}</td>
+                  <td>
+                    <button class="btn btn-info btn-sm" (click)="editBonExpedition(be)">Modifier</button>
+                    <button class="btn btn-danger btn-sm ms-2" (click)="deleteBonExpedition(be.id!)">Supprimer</button>
+                    <button class="btn btn-primary btn-sm ms-2" (click)="viewBonExpeditionDetails(be)">Détails</button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="10" class="text-center">Aucun Bon d'Expédition trouvé.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div>
+            Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} BEs au total)
+          </div>
+          <div>
+            Éléments par page:
+            <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+              </li>
+
+              @for (page of getPagesArray(); track page) {
+                <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                  <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                    {{ getDisplayPageNumber(page) }}
+                  </a>
+                </li>
+              }
+
+              <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

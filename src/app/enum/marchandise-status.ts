@@ -1,0 +1,6 @@
+export enum MarchandiseStatus {
+  BROUILLON = 'BROUILLON',
+  SOUMIS_POUR_VALIDATION = 'SOUMIS_POUR_VALIDATION',
+  VALIDE = 'VALIDE',
+  REJETE = 'REJETE'
+}

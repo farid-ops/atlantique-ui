@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Armateurs" [options]="false">
+      <h4>Ajouter / Modifier un Armateur</h4>
+      <form (ngSubmit)="selectedArmateur ? updateArmateur() : addArmateur()">
+        <div class="form-group">
+          <label for="designation">Désignation:</label>
+          <input
+            id="designation"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.designation" name="designation"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          {{ selectedArmateur ? 'Modifier' : 'Ajouter' }}
+        </button>
+        @if (selectedArmateur) {
+          <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des Armateurs</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Désignation</th>
+            <th>Date de Création</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (armateur of armateurs; track armateur.id) {
+              <tr>
+                <td>{{ armateur.id }}</td>
+                <td>{{armateur.designation}}</td>
+                <td>{{ armateur.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editArmateur(armateur)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteArmateur(armateur.id!)">Supprimer</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">Aucun armateur trouvé.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>

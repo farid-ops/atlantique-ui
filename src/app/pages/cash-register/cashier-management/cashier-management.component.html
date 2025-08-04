@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Caissiers" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des caissiers...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <button *ngIf="currentUserRoles.has('ADMIN')" class="btn btn-success mb-3" (click)="addCashier()">
+          <i class="feather icon-user-plus"></i> Ajouter un nouveau Caissier
+        </button>
+
+        <div class="table-responsive" *ngIf="cashiers.length > 0">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th (click)="changeSort('nom')">Nom <i *ngIf="sortBy === 'nom'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('prenom')">Prénom <i *ngIf="sortBy === 'prenom'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('email')">Email <i *ngIf="sortBy === 'email'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('idSite')">Site <i *ngIf="sortBy === 'idSite'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('cashBalance')">Balance Caisse <i *ngIf="sortBy === 'cashBalance'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th>Statut Caisse (Ajd)</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (cashier of cashiers; track cashier.id) {
+                <tr>
+                  <td>{{ cashier.nom }}</td>
+                  <td>{{ cashier.prenom }}</td>
+                  <td>{{ cashier.email }}</td>
+                  <td>{{ cashier.idSite || 'N/A' }}</td>
+                  <td>{{ cashier.cashBalance  }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="cashier.isCashRegisterOpen ? 'bg-success' : 'bg-danger'">
+                      {{ cashier.isCashRegisterOpen ? 'Ouverte' : 'Clôturée' }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-info btn-sm" (click)="viewCashierDetails(cashier.id!)">
+                      <i class="feather icon-eye"></i> Détails
+                    </button>
+                    <button class="btn btn-success btn-sm ms-2" (click)="manageCashierRegister(cashier.id!, 'open')"
+                            *ngIf="currentUserRoles.has('ADMIN') && !cashier.isCashRegisterOpen">
+                      <i class="feather icon-unlock"></i> Ouvrir
+                    </button>
+                    <button class="btn btn-warning btn-sm ms-2" (click)="manageCashierRegister(cashier.id!, 'close')"
+                            *ngIf="currentUserRoles.has('ADMIN') && cashier.isCashRegisterOpen">
+                      <i class="feather icon-lock"></i> Clôturer
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="text-center">Aucun caissier trouvé.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+          <div>
+            Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} caissiers au total)
+          </div>
+          <div>
+            Éléments par page:
+            <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+              </li>
+
+              @for (page of getPagesArray(); track page) {
+                <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                  <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                    {{ getDisplayPageNumber(page) }}
+                  </a>
+                </li>
+              }
+
+              <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

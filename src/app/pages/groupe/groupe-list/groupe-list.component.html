@@ -1,0 +1,96 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Groupes" [options]="false">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          Chargement des groupes...
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <button *ngIf="currentUserRoles.has('ADMIN')" class="btn btn-success mb-3" (click)="createGroupe()">
+          <i class="feather icon-plus"></i> Créer un nouveau Groupe
+        </button>
+
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th (click)="changeSort('denomination')">Dénomination <i *ngIf="sortBy === 'denomination'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('prixBeStandard')">Prix BE Standard <i *ngIf="sortBy === 'prixBeStandard'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('coutBSC')">Coût BSC <i *ngIf="sortBy === 'coutBSC'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('tonnage')">Tonnage <i *ngIf="sortBy === 'tonnage'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('valeurConteneur10Pieds')">Val 10 Pieds <i *ngIf="sortBy === 'valeurConteneur10Pieds'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('valeurConteneur20Pieds')">Val 20 Pieds <i *ngIf="sortBy === 'valeurConteneur20Pieds'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th (click)="changeSort('valeurConteneur30Pieds')">Val 30 Pieds <i *ngIf="sortBy === 'valeurConteneur30Pieds'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (groupe of groupes; track groupe.id) {
+                <tr>
+                  <td>{{ groupe.denomination }}</td>
+                  <td>{{ groupe.prixBeStandard || 'N/A'}}</td>
+                  <td>{{ groupe.coutBSC || 'N/A'}}</td>
+                  <td>{{ groupe.tonnage || 'N/A' }}</td>
+                  <td>{{ groupe.valeurConteneur10Pieds || 'N/A'}}</td>
+                  <td>{{ groupe.valeurConteneur20Pieds || 'N/A' }}</td>
+                  <td>{{ groupe.valeurConteneur30Pieds || 'N/A'}}</td>
+                  <td>
+                    <button class="btn btn-info btn-sm" (click)="editGroupe(groupe)"
+                            [disabled]="!currentUserRoles.has('ADMIN') && !currentUserRoles.has('ADMINISTRATEUR_GROUPE')">Modifier</button>
+                    <button class="btn btn-danger btn-sm ms-2" (click)="deleteGroupe(groupe.id!)"
+                            [disabled]="!currentUserRoles.has('ADMIN')">Supprimer</button>
+                    <button class="btn btn-primary btn-sm ms-2" [routerLink]="['/groupes', groupe.id, 'details']">Détails</button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="12" class="text-center">Aucun groupe trouvé.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div>
+            Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} groupes au total)
+          </div>
+          <div>
+            Éléments par page:
+            <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+              </li>
+
+              @for (page of getPagesArray(); track page) {
+                <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                  <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                    {{ getDisplayPageNumber(page) }}
+                  </a>
+                </li>
+              }
+
+              <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

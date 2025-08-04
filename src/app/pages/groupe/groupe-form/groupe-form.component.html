@@ -1,0 +1,145 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [cardTitle]="isEditMode ? 'Modifier un Groupe' : 'Créer un Groupe'" [options]="false">
+      <div class="card-body">
+        <form [formGroup]="groupeForm" (ngSubmit)="onSubmit()">
+          <h5 class="mb-3">Informations Générales du Groupe</h5>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="denomination">Dénomination: <span class="text-danger">*</span></label>
+              <input id="denomination" type="text" formControlName="denomination" class="form-control">
+              <div *ngIf="groupeForm.get('denomination')?.invalid && (groupeForm.get('denomination')?.dirty || groupeForm.get('denomination')?.touched)" class="text-danger">
+                La dénomination est obligatoire.
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="telephone">Téléphone: <span class="text-danger">*</span></label>
+              <input id="telephone" type="text" formControlName="telephone" class="form-control">
+              <div *ngIf="groupeForm.get('telephone')?.invalid && (groupeForm.get('telephone')?.dirty || groupeForm.get('telephone')?.touched)" class="text-danger">
+                Le téléphone est obligatoire.
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="email">Email: <span class="text-danger">*</span></label>
+              <input id="email" type="email" formControlName="email" class="form-control">
+              <div *ngIf="groupeForm.get('email')?.invalid && (groupeForm.get('email')?.dirty || groupeForm.get('email')?.touched)" class="text-danger">
+                <span *ngIf="groupeForm.get('email')?.errors?.['required']">L'email est obligatoire.</span>
+                <span *ngIf="groupeForm.get('email')?.errors?.['email']">Format d'email invalide.</span>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="siteWeb">Site Web:</label>
+              <input id="siteWeb" type="text" formControlName="siteWeb" class="form-control">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="nif">NIF:</label>
+              <input id="nif" type="text" formControlName="nif" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="bp">Boîte Postale (BP):</label>
+              <input id="bp" type="text" formControlName="bp" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adresse">Adresse: <span class="text-danger">*</span></label>
+            <textarea id="adresse" formControlName="adresse" class="form-control" rows="3"></textarea>
+            <div *ngIf="groupeForm.get('adresse')?.invalid && (groupeForm.get('adresse')?.dirty || groupeForm.get('adresse')?.touched)" class="text-danger">
+              L'adresse est obligatoire.
+            </div>
+          </div>
+
+          <h5 class="mt-4 mb-3">Valeurs Constantes pour les Calculs</h5>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label for="prixBeStandard">Prix BE Standard: <span class="text-danger">*</span></label>
+              <input id="prixBeStandard" type="number" formControlName="prixBeStandard" class="form-control">
+              <div *ngIf="groupeForm.get('prixBeStandard')?.invalid && (groupeForm.get('prixBeStandard')?.dirty || groupeForm.get('prixBeStandard')?.touched)" class="text-danger">
+                Le prix BE standard est obligatoire et doit être numérique (>= 0).
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="visaVehiculeMoins5000kg">Visa Véhicule (-5T): <span class="text-danger">*</span></label>
+              <input id="visaVehiculeMoins5000kg" type="number" formControlName="visaVehiculeMoins5000kg" class="form-control">
+              <div *ngIf="groupeForm.get('visaVehiculeMoins5000kg')?.invalid && (groupeForm.get('visaVehiculeMoins5000kg')?.dirty || groupeForm.get('visaVehiculeMoins5000kg')?.touched)" class="text-danger">
+                Le visa (-5T) est obligatoire et doit être numérique (>= 0).
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="visaVehiculePlus5000kg">Visa Véhicule (+5T): <span class="text-danger">*</span></label>
+              <input id="visaVehiculePlus5000kg" type="number" formControlName="visaVehiculePlus5000kg" class="form-control">
+              <div *ngIf="groupeForm.get('visaVehiculePlus5000kg')?.invalid && (groupeForm.get('visaVehiculePlus5000kg')?.dirty || groupeForm.get('visaVehiculePlus5000kg')?.touched)" class="text-danger">
+                Le visa (+5T) est obligatoire et doit être numérique (>= 0).
+              </div>
+            </div>
+          </div>
+
+          <h5 class="mt-4 mb-3">Informations Conteneur & Tonnage</h5>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label for="coutBSC">Coût BSC:</label>
+              <input id="coutBSC" type="number" formControlName="coutBSC" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="tonnage">Tonnage:</label>
+              <input id="tonnage" type="number" formControlName="tonnage" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="valeurConteneur10Pieds">Valeur 10 Pieds:</label>
+              <input id="valeurConteneur10Pieds" type="number" formControlName="valeurConteneur10Pieds" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="valeurConteneur20Pieds">Valeur 20 Pieds:</label>
+              <input id="valeurConteneur20Pieds" type="number" formControlName="valeurConteneur20Pieds" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="valeurConteneur30Pieds">Valeur 30 Pieds:</label>
+              <input id="valeurConteneur30Pieds" type="number" formControlName="valeurConteneur30Pieds" class="form-control">
+            </div>
+          </div>
+
+
+          <h5 class="mt-4 mb-3">Actifs Numériques</h5>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="logoFile">Logo du Groupe:</label>
+              <input type="file" id="logoFile" class="form-control" (change)="onLogoFileSelected($event)" accept="image/jpeg,image/png,image/jpg">
+              <div *ngIf="currentLogoUrl" class="mt-2">
+                <p>Logo actuel:</p>
+                <img [src]="currentLogoUrl" alt="Logo actuel" style="max-width: 150px; border: 1px solid #ddd;">
+                <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeExistingImage('logo')">Supprimer Logo</button>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="signatureFile">Signature Électronique:</label>
+              <input type="file" id="signatureFile" class="form-control" (change)="onSignatureFileSelected($event)" accept="image/jpeg,image/png,image/jpg">
+              <div *ngIf="currentSignatureUrl" class="mt-2">
+                <p>Signature actuelle:</p>
+                <img [src]="currentSignatureUrl" alt="Signature actuelle" style="max-width: 150px; border: 1px solid #ddd;">
+                <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeExistingImage('signature')">Supprimer Signature</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-secondary me-2" (click)="onCancel()">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="groupeForm.invalid || loading">
+              {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+              <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </button>
+          </div>
+        </form>
+
+        <div *ngIf="!groupeForm.enabled" class="alert alert-warning mt-4">
+          Vous n'avez pas les permissions nécessaires pour modifier ce groupe. Vous pouvez seulement le visualiser.
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

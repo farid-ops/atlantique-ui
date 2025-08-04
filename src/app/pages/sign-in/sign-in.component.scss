@@ -1,0 +1,81 @@
+/* app/demo/pages/authentication/sign-in/sign-in.component.scss */
+
+/* Définition des couleurs basées sur le logo */
+$atlantique-blue-dark: #1A4B7D; /* Bleu foncé du texte et du bateau */
+$atlantique-blue-medium: #3478B4; /* Un bleu un peu plus clair des vagues */
+$atlantique-blue-light: #87CEEB; /* Un bleu clair pour les vagues/reflets */
+$atlantique-bg-light: #E0F2F7;  /* Un fond très léger, inspiré du ciel/eau claire */
+
+/* Style pour l'ensemble de la page de connexion */
+.auth-wrapper {
+  background-color: $atlantique-bg-light; /* Couleur de fond claire */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* S'assurer qu'il prend toute la hauteur de la vue */
+}
+
+/* Ajustements de la carte/panneau de connexion */
+.auth-content .card {
+  box-shadow: 0 4px 8px rgba($atlantique-blue-dark, 0.2); /* Ombre avec une touche de couleur */
+  border-radius: 10px;
+  overflow: hidden; /* S'assurer que le contenu ne dépasse pas les bords arrondis */
+}
+
+/* Style du logo */
+.custom-logo {
+  max-width: 250px; /* Ajustez la taille du logo si nécessaire */
+  height: auto;
+  margin-bottom: 25px; /* Espace sous le logo */
+}
+
+/* Style des titres */
+h4.mb-3 {
+  color: $atlantique-blue-dark; /* Couleur foncée pour les titres */
+  font-weight: 600 !important;
+}
+
+/* Style des input groups */
+.input-group-text {
+  background-color: $atlantique-blue-medium; /* Fond de l'icône dans l'input group */
+  color: white; /* Couleur de l'icône */
+  border-color: $atlantique-blue-medium;
+}
+
+.form-control:focus {
+  border-color: $atlantique-blue-dark; /* Bordure foncée au focus */
+  box-shadow: 0 0 0 0.25rem rgba($atlantique-blue-dark, 0.25); /* Ombre de focus */
+}
+
+/* Style du bouton principal (SignIn) */
+.btn-primary {
+  background-color: $atlantique-blue-dark; /* Couleur principale des boutons */
+  border-color: $atlantique-blue-dark;
+  font-weight: 500;
+
+  &:hover {
+    background-color: darken($atlantique-blue-dark, 10%); /* Assombrir au survol */
+    border-color: darken($atlantique-blue-dark, 10%);
+  }
+}
+
+/* Style des liens */
+a.f-w-400 {
+  color: $atlantique-blue-medium; /* Couleur des liens */
+  &:hover {
+    color: darken($atlantique-blue-medium, 10%); /* Assombrir les liens au survol */
+  }
+}
+
+/* Ajustements pour les messages d'erreur */
+.alert-danger {
+  background-color: lighten(red, 40%);
+  color: darken(red, 20%);
+  border-color: red;
+}
+
+/* Pour le checkbox "Save credentials" */
+.checkbox-primary input[type="checkbox"]:checked + label.cr::before {
+  background-color: $atlantique-blue-dark;
+  border-color: $atlantique-blue-dark;
+}

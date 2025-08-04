@@ -1,0 +1,140 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Importateurs" [options]="false">
+      <h4>Ajouter / Modifier un Importateur</h4>
+      <form (ngSubmit)="selectedImportateur ? updateImportateur() : addImportateur()">
+        <div class="form-group">
+          <label for="nom">Nom:</label>
+          <input
+            id="nom"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.nom"
+            name="nom"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="prenom">Prénom:</label>
+          <input
+            id="prenom"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.prenom"
+            name="prenom"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="phone">Téléphone:</label>
+          <input
+            id="phone"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.phone"
+            name="phone"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="nif">NIF:</label>
+          <input
+            id="nif"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.nif"
+            name="nif"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          {{ selectedImportateur ? 'Modifier Importateur' : 'Ajouter Importateur' }}
+        </button>
+        @if (selectedImportateur) {
+          <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des Importateurs</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th (click)="changeSort('id')">ID <i *ngIf="sortBy === 'id'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('nom')">Nom <i *ngIf="sortBy === 'nom'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('prenom')">Prénom <i *ngIf="sortBy === 'prenom'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('phone')">Téléphone <i *ngIf="sortBy === 'phone'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('nif')">NIF <i *ngIf="sortBy === 'nif'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th (click)="changeSort('creationDate')">Date de Création <i *ngIf="sortBy === 'creationDate'" [class]="sortDirection === 'asc' ? 'feather icon-arrow-up' : 'feather icon-arrow-down'"></i></th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (importateur of importateurs; track importateur.id) {
+              <tr>
+                <td>{{ importateur.id }}</td>
+                <td>{{ importateur.nom }}</td>
+                <td>{{ importateur.prenom }}</td>
+                <td>{{ importateur.phone }}</td>
+                <td>{{ importateur.nif }}</td>
+                <td>{{ importateur.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editImportateur(importateur)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteImportateur(importateur.id!)">Supprimer</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7">Aucun importateur trouvé.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Page {{ currentPage + 1 }} sur {{ totalPages }} ({{ totalElements }} importateurs au total)
+        </div>
+        <div>
+          Éléments par page:
+          <select class="form-select form-select-sm d-inline-block w-auto ms-2" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" name="pageSizeSelect">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(0)">Première</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" href="javascript:void(0)" (click)="prevPage()">Précédent</a>
+            </li>
+
+            @for (page of getPagesArray(); track page) {
+              <li class="page-item" [class.active]="page === currentPage" [class.disabled]="page === '...' ">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">
+                  {{ getDisplayPageNumber(page) }}
+                </a>
+              </li>
+            }
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="nextPage()">Suivant</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages - 1)">Dernière</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </app-card>
+  </div>
+</div>

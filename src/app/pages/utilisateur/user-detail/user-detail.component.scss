@@ -1,0 +1,85 @@
+/* app/pages/user/user-detail/user-detail.component.scss */
+
+.user-detail-page {
+  padding: 20px;
+
+  .page-header {
+    h3 {
+      font-size: 1.8rem;
+      color: var(--primary-color); // Utilisez votre variable de couleur primaire si définie
+      margin-bottom: 0.5rem;
+      .feather {
+        vertical-align: middle;
+        font-size: 1.5rem;
+      }
+    }
+    hr {
+      border-top: 1px solid var(--border-color); // Couleur de bordure de votre thème
+      margin-top: 0.5rem;
+    }
+  }
+
+  .user-info-list {
+    .list-group-item {
+      padding: 12px 15px; // Espacement agréable
+      font-size: 0.95rem;
+
+      div { // Conteneur pour l'icône et le label
+        display: flex;
+        align-items: center;
+        strong {
+          margin-left: 5px;
+          color: var(--dark-text-color); // Ou une couleur de texte plus foncée
+        }
+      }
+      span {
+        color: var(--secondary-text-color); // Ou une couleur de texte secondaire
+      }
+    }
+
+    .icon-primary {
+      color: var(--primary-color); // Assurez-vous que cette variable est définie dans votre thème
+      font-size: 1.1rem;
+    }
+  }
+
+  .cash-summaries-list {
+    max-height: 400px; /* Limite la hauteur pour un défilement interne */
+    overflow-y: auto; /* Permet le défilement vertical */
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+
+    .summary-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid var(--light-border-color);
+      border-radius: 8px;
+      background-color: var(--card-bg-color); // Ou une couleur de fond légère
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+      h6 {
+        font-size: 1rem;
+        color: var(--heading-color);
+      }
+      p {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-top: 8px;
+        .feather {
+          font-size: 1rem;
+          vertical-align: middle;
+        }
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.4em 0.6em;
+      }
+    }
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+}

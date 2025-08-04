@@ -1,0 +1,106 @@
+<div class="container-fluid user-detail-page">
+  <div class="row page-header mb-4">
+    <div class="col-12">
+      <h3><i class="feather icon-user-check me-2"></i>Détails de l'Utilisateur</h3>
+      <hr>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6 col-md-12 mb-4">
+      <app-card [cardTitle]="'Informations Générales'">
+        <ul class="list-group list-group-flush user-info-list">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-tag me-2 icon-primary"></i><strong>ID:</strong></div>
+            <span>{{ utilisateur?.id }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-user me-2 icon-primary"></i><strong>Nom:</strong></div>
+            <span>{{ utilisateur?.nom }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-user me-2 icon-primary"></i><strong>Prénom:</strong></div>
+            <span>{{ utilisateur?.prenom }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-mail me-2 icon-primary"></i><strong>Email:</strong></div>
+            <span>{{ utilisateur?.email }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-phone me-2 icon-primary"></i><strong>Téléphone:</strong></div>
+            <span>{{ utilisateur?.telephone }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-map-pin me-2 icon-primary"></i><strong>Adresse:</strong></div>
+            <span>{{ utilisateur?.adresse }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-map me-2 icon-primary"></i><strong>ID Pays:</strong></div>
+            <span>{{ utilisateur?.idPays }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-map me-2 icon-primary"></i><strong>ID Site:</strong></div>
+            <span>{{ utilisateur?.idSite }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-users me-2 icon-primary"></i><strong>ID Groupe:</strong></div>
+            <span>{{ utilisateur?.idGroupe }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-dollar-sign me-2 icon-primary"></i><strong>Balance Caisse:</strong></div>
+            <span class="fw-bold">{{ utilisateur?.cashBalance | currency:'XOF':'symbol':'1.2-2':'fr' }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><i class="feather icon-shield me-2 icon-primary"></i><strong>Rôles:</strong></div>
+            <div>
+              <span *ngFor="let role of utilisateur?.authorites" class="badge bg-primary me-1">{{ role.nom }}</span>
+            </div>
+          </li>
+        </ul>
+      </app-card>
+    </div>
+
+    <div class="col-lg-6 col-md-12" *ngIf="isCaissier">
+      <app-card [cardTitle]="'Historique des transactions (Caisse)'">
+        <div class="row g-2 mb-3 align-items-end">
+          <div class="col-md-5">
+            <label for="startDate" class="form-label">Date de début:</label>
+            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" (change)="applyDateFilter()">
+          </div>
+          <div class="col-md-5">
+            <label for="endDate" class="form-label">Date de fin:</label>
+            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" (change)="applyDateFilter()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100" (click)="applyDateFilter()">Filtrer</button>
+          </div>
+        </div>
+
+        <div *ngIf="dailySummaries.length > 0; else noSummaries" class="cash-summaries-list">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item summary-item" *ngFor="let summary of dailySummaries">
+              <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                <h6 class="mb-0"><i class="feather icon-calendar me-2"></i>Date: <span class="fw-bold">{{ summary.operationDate | date:'fullDate':'':'fr' }}</span></h6>
+                <small class="badge" [ngClass]="summary.isClosed ? 'bg-secondary' : 'bg-success'">{{ summary.isClosed ? 'Clôturée' : 'Ouverte' }}</small>
+              </div>
+              <div class="summary-details">
+                <p>
+                  <i class="feather icon-arrow-right-circle me-1 text-info"></i>Solde initial: <span class="fw-bold">{{ summary.startingBalance | currency:'XOF':'symbol':'1.2-2':'fr' }}</span> <br>
+                  <i class="feather icon-plus-circle me-1 text-success"></i>Total dépôts: <span class="fw-bold">{{ summary.totalDeposits | currency:'XOF':'symbol':'1.2-2':'fr' }}</span> <br>
+                  <i class="feather icon-minus-circle me-1 text-danger"></i>Total retraits: <span class="fw-bold">{{ summary.totalWithdrawals | currency:'XOF':'symbol':'1.2-2':'fr' }}</span> <br>
+                  <i class="feather icon-trending-up me-1 text-primary"></i>Solde final: <span class="fw-bold">{{ summary.endingBalance | currency:'XOF':'symbol':'1.2-2':'fr' }}</span> <br>
+                  <i class="feather icon-bar-chart me-1 text-muted"></i>Nombre de transactions: <span class="fw-bold">{{ summary.numberOfTransactions }}</span>
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <ng-template #noSummaries>
+          <div class="alert alert-info mt-3 text-center">
+            <i class="feather icon-info me-2"></i>{{ errorMessage || 'Aucun résumé de caisse trouvé pour la période sélectionnée.' }}
+          </div>
+        </ng-template>
+      </app-card>
+    </div>
+  </div>
+</div>

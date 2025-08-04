@@ -1,0 +1,20 @@
+@if (!item.hidden && hasRequiredRole()) {
+  <li class="nav-item pcoded-hasmenu" [class.pcoded-trigger]="isOpen" [class.active]="isOpen">
+    <a href="javascript:" class="nav-link" (click)="toggleCollapse()">
+      @if (item.icon) {
+        <span class="pcoded-micon"><i class="feather" [ngClass]="item.icon"></i></span>
+      }
+      <span class="pcoded-mtext">{{ item.title }}</span>
+    </a>
+    <ul class="pcoded-submenu">
+      @for (child of item.children; track child.id) {
+        @if (child.type === 'collapse') {
+          <app-nav-collapse [item]="child" />
+        }
+        @if (child.type === 'item') {
+          <app-nav-item [item]="child" />
+        }
+      }
+    </ul>
+  </li>
+}

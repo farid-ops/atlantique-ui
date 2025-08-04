@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Gestion des Autorités" [options]="false">
+      <h4>Ajouter / Modifier une Autorité</h4>
+      <form (ngSubmit)="selectedAutorite ? updateAutorite() : addAutorite()">
+        <div class="form-group">
+          <label for="nom">Nom de l'autorité:</label>
+          <input
+            id="nom"
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentFormData.nom"
+            name="nom"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          {{ selectedAutorite ? 'Modifier Autorité' : 'Ajouter Autorité' }}
+        </button>
+        @if (selectedAutorite) {
+          <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="cancelEdit()">Annuler</button>
+        }
+      </form>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      }
+
+      <h4 class="mt-5">Liste des Autorités</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Date de Création</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (autorite of autorites; track autorite.id) {
+              <tr>
+                <td>{{ autorite.id }}</td>
+                <td>{{ autorite.nom }}</td>
+                <td>{{ autorite.creationDate | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="editAutorite(autorite)">Modifier</button>
+                  <button class="btn btn-danger btn-sm ms-2" (click)="deleteAutorite(autorite.id!)">Supprimer</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">Aucune autorité trouvée.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>

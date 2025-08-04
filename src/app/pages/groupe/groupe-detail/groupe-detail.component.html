@@ -1,0 +1,129 @@
+<div class="container-fluid group-detail-page">
+  <div class="row page-header mb-4">
+    <div class="col-12">
+      <h3 class="text-primary fw-bold"><i class="feather icon-info me-2"></i>Détails du Groupe</h3>
+      <hr class="border-primary border-2 opacity-75">
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2 text-muted">Chargement des informations du groupe...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    <i class="feather icon-alert-triangle me-2"></i>{{ errorMessage }}
+  </div>
+
+  <app-card *ngIf="groupe && !loading && !errorMessage" [cardTitle]="'Informations de ' + groupe.denomination">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-6 col-md-12 mb-4">
+          <h5 class="text-info mb-3"><i class="feather icon-file-text me-2"></i>Informations Générales</h5>
+          <ul class="list-group list-group-flush detail-list rounded">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">ID:</div>
+              <span class="text-dark">{{ groupe.id }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Dénomination:</div>
+              <span class="text-dark">{{ groupe.denomination }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Téléphone:</div>
+              <span class="text-dark">{{ groupe.telephone }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Email:</div>
+              <span class="text-primary">{{ groupe.email }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Site Web:</div>
+              <span class="text-dark">{{ groupe.siteWeb || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">NIF:</div>
+              <span class="text-dark">{{ groupe.nif || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">BP:</div>
+              <span class="text-dark">{{ groupe.bp || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Adresse:</div>
+              <span class="text-dark">{{ groupe.adresse }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-lg-6 col-md-12 mb-4">
+          <h5 class="text-success mb-3"><i class="feather icon-dollar-sign me-2"></i>Valeurs Constantes & Actifs</h5>
+          <ul class="list-group list-group-flush detail-list rounded mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Prix BE Standard:</div>
+              <span class="text-dark">{{ groupe.prixBeStandard  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Visa Véhicule (-5T):</div>
+              <span class="text-dark">{{ groupe.visaVehiculeMoins5000kg  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Visa Véhicule (+5T):</div>
+              <span class="text-dark">{{ groupe.visaVehiculePlus5000kg }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Coût BSC:</div>
+              <span class="text-dark">{{ groupe.coutBSC || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Tonnage:</div>
+              <span class="text-dark">{{ groupe.tonnage || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Val. Conteneur 10 Pieds:</div>
+              <span class="text-dark">{{ groupe.valeurConteneur10Pieds || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Val. Conteneur 20 Pieds:</div>
+              <span class="text-dark">{{ groupe.valeurConteneur20Pieds || 'N/A' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="fw-bold text-secondary">Val. Conteneur 30 Pieds:</div>
+              <span class="text-dark">{{ groupe.valeurConteneur30Pieds || 'N/A'}}</span>
+            </li>
+          </ul>
+
+          <h5 class="text-warning mb-3"><i class="feather icon-image me-2"></i>Actifs Numériques</h5>
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center mb-3">
+              <div class="card shadow-sm rounded">
+                <div class="card-body">
+                  <h6 class="card-title text-muted mb-2">Logo</h6>
+                  <img [src]="getLogoUrl()" alt="Logo du groupe" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;">
+                  <p class="card-text text-muted mt-2 small">{{ groupe.logo || 'Aucun logo' }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 text-center mb-3">
+              <div class="card shadow-sm rounded">
+                <div class="card-body">
+                  <h6 class="card-title text-muted mb-2">Signature</h6>
+                  <img [src]="getSignatureUrl() || 'assets/images/placeholder.png'" alt="Signature du groupe" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;">
+                  <p class="card-text text-muted mt-2 small">{{ groupe.signatureImage || 'Aucune signature' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer text-end py-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill" (click)="goBackToList()">
+          <i class="feather icon-arrow-left me-1"></i>Retour à la liste
+        </button>
+      </div>
+    </div>
+  </app-card>
+</div>
