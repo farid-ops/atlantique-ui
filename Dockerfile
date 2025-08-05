@@ -1,20 +1,21 @@
-# ---- Build Stage ----
-FROM node:22-alpine AS builder
+# atlantique-ui/Dockerfile
+FROM node:22 AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
+
 RUN npm install
 
 COPY . .
 
-RUN npm run build -- --configuration production
+RUN npm run build -- --base-href=/atlantique/
 
-FROM nginx:stable-alpine
+FROM nginx:1.25-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist/atlantique-ui/browser /usr/share/nginx/html/atlantique
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
