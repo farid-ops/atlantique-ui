@@ -157,7 +157,7 @@ const routes: Routes = [
         path: 'reports',
         component: RecettesComponent,
         data: { roles: ['ADMIN', 'ADMIN_GROUPE', 'CSITE', 'CAISSIER'] }
-      }
+      },
     ]
   },
   {

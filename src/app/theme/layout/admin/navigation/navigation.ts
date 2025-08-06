@@ -70,14 +70,6 @@ export const NavigationItems: NavigationItem[] = [
             roles: ['ADMIN', 'OPERATEUR']
           },
           {
-            id: 'nature-marchandise-item',
-            title: 'Nature Marchandise',
-            type: 'item',
-            url: '/nature-marchandises',
-            icon: 'feather icon-tag',
-            roles: ['ADMIN', 'STATICIEN']
-          },
-          {
             id: 'bon-expeditions-item',
             title: 'Gestion BE',
             type: 'item',
@@ -179,6 +171,48 @@ export const NavigationItems: NavigationItem[] = [
             classes: 'nav-item',
             icon: 'feather icon-user-plus',
             roles: ['ADMIN', 'ADMIN_GROUPE']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'vehicule-config',
+    title: 'Paramètres Véhicules',
+    type: 'group',
+    icon: 'feather icon-settings',
+    roles: ['ADMIN'],
+    children: [
+      {
+        id: 'vehicule-config',
+        title: 'Gestion Véhicules',
+        type: 'collapse',
+        icon: 'feather icon-settings',
+        roles: ['ADMIN'],
+        children: [
+          {
+            id: 'nature-marchandises',
+            title: 'Nature de Ma',
+            type: 'item',
+            url: '/nature-marchandises',
+            icon: 'feather icon-list',
+            roles: ['ADMIN']
+          },
+          {
+            id: 'gammes-vehicules',
+            title: 'Véhicules',
+            type: 'item',
+            url: '/gammes',
+            icon: 'feather icon-tag',
+            roles: ['ADMIN']
+          },
+          {
+            id: 'modeles-vehicules',
+            title: 'Modèles V',
+            type: 'item',
+            url: '/marques',
+            icon: 'feather icon-truck',
+            roles: ['ADMIN']
           }
         ]
       }
